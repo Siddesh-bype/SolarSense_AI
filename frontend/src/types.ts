@@ -12,23 +12,49 @@ export interface BBox {
 
 export interface ScanStatusResponse {
     scan_id: string;
-    status: "pending" | "preprocessing" | "depth_estimation" | "shadow_simulation" | "panel_placement" | "financial_calculation" | "generating_report" | "complete" | "failed";
+    status: "pending" | "preprocessing" | "depth_estimation" | "shadow_simulation" | "analyzed" | "complete" | "failed";
     progress_percent: number;
     current_step: string;
     error_message?: string;
 }
 
-export interface PanelPlacement {
-    panel_id: number;
-    x: number;
-    y: number;
-    width: number;
-    height: number;
-    real_x_m: number;
-    real_y_m: number;
-    tilt_degrees: number;
-    irradiance_pct: number;
+/* ── Phase 1: Analysis Result (from POST /api/scan/upload) ── */
+
+export interface PanelSpec {
+    width_px: number;
+    height_px: number;
+    wattage: number;
+    width_m: number;
+    height_m: number;
 }
+
+export interface AnalysisResult {
+    scan_id: string;
+    processing_time_seconds: number;
+    image_width: number;
+    image_height: number;
+    depth: {
+        estimated_roof_area_m2: number;
+        tilt_angle_degrees: number;
+        obstruction_count: number;
+        obstruction_boxes: BBox[];
+        confidence: number;
+        depth_map_url: string;
+        roof_mask_url: string;
+    };
+    shadow: {
+        avg_irradiance_kwh_m2_year: number;
+        peak_irradiance_zone: number[];
+        heatmap_url: string;
+    };
+    panel_spec: PanelSpec;
+    original_image_url: string;
+    city: string;
+    location: GPSCoords;
+    irradiance_source: string;
+}
+
+/* ── Phase 2: Financial Calc Result (from POST /api/scan/calculate) ── */
 
 export interface CostBreakdown {
     panel_cost_inr: number;
@@ -60,34 +86,8 @@ export interface FinancialReport {
     cumulative_savings_by_year: number[];
 }
 
-export interface CompleteScanResult {
-    scan_id: string;
-    processing_time_seconds: number;
-    depth: {
-        estimated_roof_area_m2: number;
-        tilt_angle_degrees: number;
-        obstruction_count: number;
-        confidence: number;
-        depth_map_url: string;
-    };
-    shadow: {
-        avg_irradiance_kwh_m2_year: number;
-        heatmap_url: string;
-    };
-    placement: {
-        panels: PanelPlacement[];
-        total_panels: number;
-        total_area_m2: number;
-        system_capacity_kw: number;
-        estimated_annual_kwh: number;
-        coverage_percentage: number;
-        placement_url: string;
-        image_width: number;
-        image_height: number;
-    };
+export interface FinancialCalcResult {
+    total_panels: number;
     financial: FinancialReport;
     summary: string;
-    original_image_url: string;
-    city: string;
-    location: GPSCoords;
 }

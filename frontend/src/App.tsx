@@ -2,37 +2,49 @@ import { useEffect, useState } from 'react';
 import { useScan } from './hooks/useScan';
 import { RoofUploader } from './components/RoofUploader';
 import { ScanProgress } from './components/ScanProgress';
-import { HeatmapOverlay } from './components/HeatmapOverlay';
-import { PanelPlacementAR } from './components/PanelPlacementAR';
+import { PanelEditor } from './components/PanelEditor';
+import type { PlacedPanel } from './components/PanelEditor';
 import { FinancialDashboard } from './components/FinancialDashboard';
 import { ReportCard } from './components/ReportCard';
 import { Sun } from 'lucide-react';
 
 function App() {
-  const { isUploading, status, result, error, uploadPhoto, reset } = useScan();
-  const [viewState, setViewState] = useState<'upload' | 'progress' | 'heatmap' | 'placement' | 'financial'>('upload');
+  const {
+    isUploading,
+    isCalculating,
+    status,
+    analysis,
+    financialResult,
+    error,
+    uploadPhoto,
+    calculateFinancials,
+    reset,
+  } = useScan();
+
+  const [viewState, setViewState] = useState<'upload' | 'progress' | 'editor' | 'financial'>('upload');
 
   const handleUpload = (file: File, options: { city: string; monthly_bill: number; isDemo: boolean }) => {
     setViewState('progress');
     uploadPhoto(file, options);
   };
 
-  // When result comes in, we can either automatically transition or wait.
-  // The prompt asks for a "90-second demo flow without any user intervention",
-  // so when result is ready we should transition automatically, then maybe delay between views.
-  // For safety, providing manual progression buttons in the UI as implemented.
+  const handlePanelSubmit = (panels: PlacedPanel[]) => {
+    calculateFinancials(panels);
+  };
 
-  // Actually, if we want an auto-flow, we can use useEffect to transition automatically, 
-  // but manual transition is safer for a functional UI. Let's start with manual transition 
-  // after progress finishes, or just show everything sequentially in a scroll view.
-  // The components are built as sequential cards. Let's just show them based on state.
-
-  // If scan is complete but view is still 'progress', automatically switch to heatmap.
+  // Auto-transition: progress → editor when analysis is ready
   useEffect(() => {
-    if (status?.status === 'complete' && result && viewState === 'progress') {
-      setViewState('heatmap');
+    if (analysis && viewState === 'progress') {
+      setViewState('editor');
     }
-  }, [status, result, viewState]);
+  }, [analysis, viewState]);
+
+  // Auto-transition: editor → financial when financial result comes in
+  useEffect(() => {
+    if (financialResult && viewState === 'editor') {
+      setViewState('financial');
+    }
+  }, [financialResult, viewState]);
 
   return (
     <div className="app-wrapper">
@@ -60,7 +72,7 @@ function App() {
         {/* Error State */}
         {error && (
           <div style={{ maxWidth: '800px', margin: '0 auto 2rem auto', padding: '1rem', background: 'rgba(213, 0, 0, 0.1)', border: '1px solid var(--color-danger)', borderRadius: '12px', color: '#ffaaaa', textAlign: 'center' }}>
-            <p style={{ fontWeight: 600, marginBottom: '0.5rem' }}>Failed to generate solar plan</p>
+            <p style={{ fontWeight: 600, marginBottom: '0.5rem' }}>Something went wrong</p>
             <p style={{ fontSize: '0.9rem' }}>{error}</p>
             <button className="btn btn-secondary" onClick={() => { reset(); setViewState('upload'); }} style={{ marginTop: '1rem' }}>Try Again</button>
           </div>
@@ -78,35 +90,30 @@ function App() {
           <ScanProgress status={status} />
         )}
 
-        {/* Heatmap View */}
-        {(viewState === 'heatmap' && result && !error) && (
-          <HeatmapOverlay
-            originalImage={result.original_image_url}
-            heatmapImage={result.shadow.heatmap_url}
-            onContinue={() => setViewState('placement')}
+        {/* Interactive Panel Editor */}
+        {(viewState === 'editor' && analysis && !error) && (
+          <PanelEditor
+            originalImage={analysis.original_image_url}
+            heatmapImage={analysis.shadow.heatmap_url}
+            panelSpec={analysis.panel_spec}
+            imageWidth={analysis.image_width}
+            imageHeight={analysis.image_height}
+            roofAreaM2={analysis.depth.estimated_roof_area_m2}
+            onSubmit={handlePanelSubmit}
+            isCalculating={isCalculating}
           />
         )}
 
-        {/* Placement View */}
-        {(viewState === 'placement' && result && !error) && (
-          <PanelPlacementAR
-            originalImage={result.original_image_url}
-            heatmapImage={result.shadow.heatmap_url}
-            panels={result.placement.panels}
-            totalCapacityKw={result.placement.system_capacity_kw}
-            imageWidth={result.placement.image_width}
-            imageHeight={result.placement.image_height}
-            onContinue={() => setViewState('financial')}
-          />
-        )}
-
-        {/* Financial Details and Report View */}
-        {(viewState === 'financial' && result && !error) && (
+        {/* Financial Results */}
+        {(viewState === 'financial' && financialResult && !error) && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '2rem' }}>
-            <FinancialDashboard data={result.financial} />
-            <ReportCard summary={result.summary} />
+            <FinancialDashboard data={financialResult.financial} />
+            <ReportCard summary={financialResult.summary} />
 
-            <div style={{ textAlign: 'center', marginTop: '2rem' }}>
+            <div style={{ textAlign: 'center', marginTop: '2rem', display: 'flex', gap: '1rem', justifyContent: 'center' }}>
+              <button className="btn btn-secondary" onClick={() => setViewState('editor')}>
+                Adjust Panels
+              </button>
               <button className="btn btn-secondary" onClick={() => { reset(); setViewState('upload'); }}>
                 Start New Scan
               </button>
@@ -118,7 +125,7 @@ function App() {
 
       {/* Footer */}
       <footer style={{ padding: '2rem', textAlign: 'center', borderTop: '1px solid var(--border-subtle)', color: 'var(--text-muted)', fontSize: '0.9rem' }}>
-        <p>Built for AMD Slingshot Hackathon 2026 • Point. Scan. Power Your Home.</p>
+        <p>Built for AMD Slingshot Hackathon 2026 &bull; Point. Scan. Power Your Home.</p>
       </footer>
     </div>
   );

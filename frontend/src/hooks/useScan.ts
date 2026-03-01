@@ -1,14 +1,17 @@
 import { useState, useCallback, useRef } from 'react';
 import axios from 'axios';
-import type { CompleteScanResult, ScanStatusResponse } from '../types';
+import type { AnalysisResult, FinancialCalcResult, ScanStatusResponse } from '../types';
+import type { PlacedPanel } from '../components/PanelEditor';
 
 const API_BASE = '/api';
 
 export function useScan() {
     const [isUploading, setIsUploading] = useState(false);
+    const [isCalculating, setIsCalculating] = useState(false);
     const [scanId, setScanId] = useState<string | null>(null);
     const [status, setStatus] = useState<ScanStatusResponse | null>(null);
-    const [result, setResult] = useState<CompleteScanResult | null>(null);
+    const [analysis, setAnalysis] = useState<AnalysisResult | null>(null);
+    const [financialResult, setFinancialResult] = useState<FinancialCalcResult | null>(null);
     const [error, setError] = useState<string | null>(null);
     const [isDemoMode, setIsDemoMode] = useState(false);
 
@@ -18,9 +21,9 @@ export function useScan() {
         try {
             const res = await axios.get(`${API_BASE}/scan/${id}/status`);
             setStatus(res.data);
-            if (res.data.status === 'complete') {
+            if (res.data.status === 'analyzed') {
                 if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
-                await fetchResult(id);
+                await fetchAnalysis(id);
             } else if (res.data.status === 'failed') {
                 if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
                 setError(res.data.error_message || 'Scan failed');
@@ -32,22 +35,24 @@ export function useScan() {
         }
     }, []);
 
-    const fetchResult = async (id: string) => {
+    const fetchAnalysis = async (id: string) => {
         try {
             const res = await axios.get(`${API_BASE}/scan/${id}/result`);
-            setResult(res.data);
+            setAnalysis(res.data);
         } catch (err: any) {
             console.error(err);
-            setError('Failed to fetch result');
+            setError('Failed to fetch analysis result');
         }
     };
 
+    /** Phase 1: Upload image and get roof analysis (depth, shadow, heatmap, panel spec) */
     const uploadPhoto = async (file: File, options: { city: string; monthly_bill: number; lat?: number; lon?: number; isDemo: boolean }) => {
         setIsUploading(true);
         setError(null);
         setScanId(null);
         setStatus(null);
-        setResult(null);
+        setAnalysis(null);
+        setFinancialResult(null);
         setIsDemoMode(options.isDemo);
 
         const formData = new FormData();
@@ -61,8 +66,6 @@ export function useScan() {
         }
 
         try {
-            // For demo mode, we still upload but maybe we simulate polling quickly or the backend returns instantly. 
-            // The backend router handles actually running the pipeline synchronously for demo.
             const res = await axios.post(`${API_BASE}/scan/upload`, formData, {
                 headers: { 'Content-Type': 'multipart/form-data' }
             });
@@ -70,17 +73,17 @@ export function useScan() {
             const id = res.data.scan_id;
             setScanId(id);
 
-            if (res.data.status === 'complete') {
-                // Synchronous pipeline completed instantly
+            if (res.data.status === 'analyzed') {
+                // Synchronous pipeline completed
                 setStatus({
                     scan_id: id,
-                    status: 'complete',
+                    status: 'analyzed',
                     progress_percent: 100,
-                    current_step: 'complete'
+                    current_step: 'ready_for_placement',
                 });
-                setResult(res.data.result);
+                setAnalysis(res.data.result);
             } else {
-                // Start polling (in case we switch back to celery later)
+                // Start polling
                 pollIntervalRef.current = window.setInterval(() => pollStatus(id), 1500);
             }
         } catch (err: any) {
@@ -91,24 +94,61 @@ export function useScan() {
         }
     };
 
+    /** Phase 2: Submit user's panel placement, get financial results */
+    const calculateFinancials = async (panels: PlacedPanel[], city?: string, monthlyBill?: number) => {
+        if (!scanId) {
+            setError('No active scan');
+            return;
+        }
+        setIsCalculating(true);
+        setError(null);
+
+        try {
+            const payload = {
+                scan_id: scanId,
+                panels: panels.map(p => ({
+                    x: p.xPct,
+                    y: p.yPct,
+                    width: p.wPct,
+                    height: p.hPct,
+                })),
+                city: city || analysis?.city || 'pune',
+                monthly_bill: monthlyBill ?? 3000,
+            };
+
+            const res = await axios.post(`${API_BASE}/scan/calculate`, payload);
+            setFinancialResult(res.data);
+        } catch (err: any) {
+            console.error(err);
+            setError(err.response?.data?.detail || 'Financial calculation failed');
+        } finally {
+            setIsCalculating(false);
+        }
+    };
+
     const reset = () => {
         if (pollIntervalRef.current) clearInterval(pollIntervalRef.current);
         setIsUploading(false);
+        setIsCalculating(false);
         setScanId(null);
         setStatus(null);
-        setResult(null);
+        setAnalysis(null);
+        setFinancialResult(null);
         setError(null);
         setIsDemoMode(false);
-    }
+    };
 
     return {
         isUploading,
+        isCalculating,
         scanId,
         status,
-        result,
+        analysis,
+        financialResult,
         error,
         isDemoMode,
         uploadPhoto,
-        reset
+        calculateFinancials,
+        reset,
     };
 }

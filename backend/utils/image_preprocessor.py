@@ -37,7 +37,7 @@ class ImagePreprocessor:
     MIN_WIDTH = 640
     MIN_HEIGHT = 480
     MIN_BRIGHTNESS = 30
-    MIN_BLUR_VARIANCE = 80
+    MIN_BLUR_VARIANCE = 20
 
     def validate(self, image_path: str) -> ValidationResult:
         """

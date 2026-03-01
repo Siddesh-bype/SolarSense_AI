@@ -1,5 +1,5 @@
 import type { ScanStatusResponse } from '../types';
-import { Cpu, Maximize, Sun, LayoutGrid, Calculator, BookOpenText, CheckCircle } from 'lucide-react';
+import { Cpu, Maximize, Sun, CheckCircle } from 'lucide-react';
 
 interface Props {
     status: ScanStatusResponse | null;
@@ -7,20 +7,17 @@ interface Props {
 
 const STEPS = [
     { id: 'preprocessing', label: 'Analyzing your rooftop photo', icon: <Cpu size={20} /> },
-    { id: 'depth_estimation', label: 'Building 3D model of your roof', icon: <Maximize size={20} /> },
-    { id: 'shadow_simulation', label: 'Simulating sunlight across seasons', icon: <Sun size={20} /> },
-    { id: 'panel_placement', label: 'Finding the best spots for panels', icon: <LayoutGrid size={20} /> },
-    { id: 'financial_calculation', label: 'Calculating your savings', icon: <Calculator size={20} /> },
-    { id: 'generating_report', label: 'Preparing personalized report', icon: <BookOpenText size={20} /> },
+    { id: 'depth_estimation', label: 'Building 3D depth model of your roof', icon: <Maximize size={20} /> },
+    { id: 'shadow_simulation', label: 'Simulating sunlight & shadow patterns', icon: <Sun size={20} /> },
 ];
 
 export function ScanProgress({ status }: Props) {
     if (!status) return null;
 
     const currentIdx = STEPS.findIndex(s => s.id === status.current_step);
-    const activeIdx = currentIdx >= 0 ? currentIdx : (status.status === 'complete' ? STEPS.length : 0);
+    const activeIdx = currentIdx >= 0 ? currentIdx : (status.status === 'analyzed' || status.status === 'complete' ? STEPS.length : 0);
 
-    const percentage = status.status === 'complete' ? 100 : status.progress_percent;
+    const percentage = (status.status === 'analyzed' || status.status === 'complete') ? 100 : status.progress_percent;
 
     return (
         <div className="glass-panel animate-in" style={{ padding: '2.5rem', maxWidth: '600px', margin: '0 auto' }}>
@@ -67,8 +64,9 @@ export function ScanProgress({ status }: Props) {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {STEPS.map((step, idx) => {
-                    const isCompleted = idx < activeIdx || status.status === 'complete';
-                    const isActive = idx === activeIdx && status.status !== 'complete';
+                    const done = status.status === 'analyzed' || status.status === 'complete';
+                    const isCompleted = idx < activeIdx || done;
+                    const isActive = idx === activeIdx && !done;
                     const isPending = idx > activeIdx;
 
                     let color = 'var(--text-primary)';
