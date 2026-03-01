@@ -35,7 +35,7 @@ Built for the **AMD Slingshot Hackathon 2026** | Sustainable AI & Green Tech
 
 - Python 3.10 – 3.12
 - Node.js 18+
-- (Optional) AMD ROCm or NVIDIA CUDA for GPU acceleration
+- (Optional) AMD ROCm for GPU acceleration
 
 ### 1. Clone
 
@@ -86,7 +86,7 @@ SolarSense_AI/
 │   ├── weights/
 │   │   └── placement_net.pth    # Trained model weights
 │   ├── utils/
-│   │   ├── gpu_manager.py       # AMD ROCm / CUDA / CPU detection
+│   │   ├── gpu_manager.py       # AMD ROCm / CPU detection
 │   │   ├── image_preprocessor.py
 │   │   └── pvgis_client.py      # Solar irradiance data (PVGIS API + offline)
 │   └── data/                    # Static JSON (costs, subsidies, panel specs)
@@ -137,7 +137,7 @@ SolarSense_AI/
 | Frontend | React 19, TypeScript, Vite, Recharts, Lucide Icons |
 | Backend | Python, FastAPI, Uvicorn |
 | ML Models | Depth Anything V2 (HuggingFace), PlacementNet U-Net CNN (custom) |
-| Compute | AMD ROCm, NVIDIA CUDA, or CPU (auto-detected) |
+| Compute | AMD ROCm (HIP) or CPU (auto-detected) |
 | Data | PVGIS solar irradiance, PM Surya Ghar subsidy rates |
 
 ---
