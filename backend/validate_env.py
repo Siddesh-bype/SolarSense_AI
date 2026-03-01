@@ -25,7 +25,7 @@ def _():
 
 @check("Compute device")
 def _():
-    from utils.gpu_manager import get_device, get_device_info
+    from backend.utils.gpu_manager import get_device, get_device_info
     info = get_device_info()
     device = get_device()
     print(f"  → device={device}  name={info.get('gpu_name', 'CPU')}")

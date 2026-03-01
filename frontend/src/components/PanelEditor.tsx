@@ -85,7 +85,12 @@ export function PanelEditor({
     }, [panelWPct, panelHPct, dragInfo]);
 
     const handlePanelMouseDown = useCallback((e: React.MouseEvent, panelId: number) => {
+        // Don't start drag if clicking on action buttons
+        const target = e.target as HTMLElement;
+        if (target.closest('[data-action]')) return;
+
         e.stopPropagation();
+        e.preventDefault();
         const rect = containerRef.current?.getBoundingClientRect();
         if (!rect) return;
 
@@ -235,9 +240,9 @@ export function PanelEditor({
                                     width: `${p.wPct}%`,
                                     height: `${p.hPct}%`,
                                     backgroundColor: isSelected
-                                        ? 'rgba(0, 230, 118, 0.45)'
-                                        : 'rgba(41, 121, 255, 0.4)',
-                                    border: `2px solid ${isSelected ? '#00E676' : 'rgba(255,255,255,0.7)'}`,
+                                        ? 'rgba(26, 115, 232, 0.45)'
+                                        : 'rgba(26, 115, 232, 0.3)',
+                                    border: `2px solid ${isSelected ? '#1a73e8' : 'rgba(26, 115, 232, 0.6)'}`,
                                     borderRadius: '2px',
                                     cursor: dragInfo?.id === p.id ? 'grabbing' : 'grab',
                                     display: 'flex',
@@ -248,8 +253,8 @@ export function PanelEditor({
                                     fontWeight: 700,
                                     textShadow: '0 1px 3px rgba(0,0,0,0.8)',
                                     boxShadow: isSelected
-                                        ? '0 0 12px rgba(0, 230, 118, 0.6)'
-                                        : '0 1px 4px rgba(0,0,0,0.3)',
+                                        ? '0 0 12px rgba(26, 115, 232, 0.5)'
+                                        : '0 1px 4px rgba(0,0,0,0.2)',
                                     transition: dragInfo ? 'none' : 'box-shadow 0.2s, border-color 0.2s',
                                     zIndex: isSelected ? 10 : 1,
                                 }}
@@ -259,6 +264,7 @@ export function PanelEditor({
                                 {/* Panel action buttons */}
                                 {isSelected && !dragInfo && (
                                     <div
+                                        data-action="true"
                                         style={{
                                             position: 'absolute',
                                             top: '-32px',
@@ -268,35 +274,40 @@ export function PanelEditor({
                                             gap: '4px',
                                             zIndex: 20,
                                         }}
+                                        onMouseDown={e => e.stopPropagation()}
                                         onClick={e => e.stopPropagation()}
                                     >
                                         <button
-                                            onClick={() => rotatePanel(p.id)}
+                                            data-action="true"
+                                            onClick={(e) => { e.stopPropagation(); rotatePanel(p.id); }}
                                             style={{
-                                                background: 'var(--bg-surface-elevated)',
-                                                border: '1px solid var(--border-subtle)',
+                                                background: '#ffffff',
+                                                border: '1px solid #d0d5dd',
                                                 borderRadius: '6px',
                                                 padding: '3px 6px',
                                                 cursor: 'pointer',
-                                                color: 'white',
+                                                color: '#344054',
                                                 display: 'flex',
                                                 alignItems: 'center',
+                                                boxShadow: '0 1px 3px rgba(0,0,0,0.15)'
                                             }}
                                             title="Rotate"
                                         >
                                             <RotateCw size={14} />
                                         </button>
                                         <button
-                                            onClick={() => removePanel(p.id)}
+                                            data-action="true"
+                                            onClick={(e) => { e.stopPropagation(); removePanel(p.id); }}
                                             style={{
-                                                background: 'var(--bg-surface-elevated)',
-                                                border: '1px solid rgba(213,0,0,0.5)',
+                                                background: '#ffffff',
+                                                border: '1px solid #fda29b',
                                                 borderRadius: '6px',
                                                 padding: '3px 6px',
                                                 cursor: 'pointer',
-                                                color: '#ff5252',
+                                                color: '#d92d20',
                                                 display: 'flex',
                                                 alignItems: 'center',
+                                                boxShadow: '0 1px 3px rgba(0,0,0,0.15)'
                                             }}
                                             title="Remove"
                                         >
@@ -314,13 +325,13 @@ export function PanelEditor({
                             position: 'absolute',
                             top: '50%', left: '50%',
                             transform: 'translate(-50%, -50%)',
-                            background: 'rgba(0,0,0,0.7)',
-                            backdropFilter: 'blur(8px)',
+                            background: 'rgba(255,255,255,0.95)',
+                            boxShadow: '0 4px 24px rgba(0,0,0,0.12)',
                             padding: '1.5rem 2rem',
-                            borderRadius: '16px',
+                            borderRadius: '12px',
                             textAlign: 'center',
                             pointerEvents: 'none',
-                            border: '1px solid var(--border-subtle)',
+                            border: '1px solid #e4e7ec',
                         }}>
                             <Plus size={32} style={{ color: 'var(--color-primary)', marginBottom: '0.5rem' }} />
                             <p style={{ fontWeight: 600, fontSize: '1.1rem' }}>Click anywhere on the roof</p>
@@ -336,8 +347,8 @@ export function PanelEditor({
                             position: 'absolute',
                             bottom: '10px', left: '10px',
                             display: 'flex', alignItems: 'center', gap: '0.5rem',
-                            background: 'rgba(0,0,0,0.65)',
-                            backdropFilter: 'blur(8px)',
+                            background: 'rgba(255,255,255,0.92)',
+                            boxShadow: '0 1px 4px rgba(0,0,0,0.12)',
                             padding: '6px 12px',
                             borderRadius: '8px',
                             fontSize: '0.8rem',

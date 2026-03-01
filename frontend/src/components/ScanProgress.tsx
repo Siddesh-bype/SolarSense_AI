@@ -12,18 +12,21 @@ const STEPS = [
 ];
 
 export function ScanProgress({ status }: Props) {
-    if (!status) return null;
+    // While waiting for the first status update (backend processes synchronously),
+    // show a loading screen instead of nothing.
+    const currentStep = status?.current_step ?? 'preprocessing';
+    const currentStatus = status?.status ?? 'pending';
 
-    const currentIdx = STEPS.findIndex(s => s.id === status.current_step);
-    const activeIdx = currentIdx >= 0 ? currentIdx : (status.status === 'analyzed' || status.status === 'complete' ? STEPS.length : 0);
+    const currentIdx = STEPS.findIndex(s => s.id === currentStep);
+    const activeIdx = currentIdx >= 0 ? currentIdx : (currentStatus === 'analyzed' || currentStatus === 'complete' ? STEPS.length : 0);
 
-    const percentage = (status.status === 'analyzed' || status.status === 'complete') ? 100 : status.progress_percent;
+    const percentage = (currentStatus === 'analyzed' || currentStatus === 'complete') ? 100 : (status?.progress_percent ?? 5);
 
     return (
         <div className="glass-panel animate-in" style={{ padding: '2.5rem', maxWidth: '600px', margin: '0 auto' }}>
             <div style={{ textAlign: 'center', marginBottom: '2rem' }}>
-                <h2 style={{ fontSize: '1.8rem', marginBottom: '0.5rem' }}>AI Processing Engine</h2>
-                <p style={{ color: 'var(--text-muted)' }}>SolarSense is analyzing your roof structure...</p>
+                <h2 style={{ fontSize: '1.4rem', fontWeight: 600, marginBottom: '0.25rem' }}>Analyzing Your Roof</h2>
+                <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>This usually takes a few seconds.</p>
             </div>
 
             <div style={{ marginBottom: '2.5rem' }}>
@@ -34,9 +37,9 @@ export function ScanProgress({ status }: Props) {
 
                 {/* Progress Bar Container */}
                 <div style={{
-                    height: '12px',
-                    background: 'rgba(255,255,255,0.05)',
-                    borderRadius: '6px',
+                    height: '8px',
+                    background: '#f2f4f7',
+                    borderRadius: '4px',
                     overflow: 'hidden',
                     border: '1px solid var(--border-subtle)'
                 }}>
@@ -44,11 +47,11 @@ export function ScanProgress({ status }: Props) {
                     <div style={{
                         height: '100%',
                         width: `${percentage}%`,
-                        background: 'var(--gradient-primary)',
-                        boxShadow: 'var(--glow-primary)',
+                        background: 'var(--color-primary)',
                         transition: 'width 0.5s ease-out',
                         position: 'relative',
-                        overflow: 'hidden'
+                        overflow: 'hidden',
+                        borderRadius: '4px'
                     }}>
                         {/* Shimmer effect inside loader */}
                         <div style={{
@@ -64,7 +67,7 @@ export function ScanProgress({ status }: Props) {
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                 {STEPS.map((step, idx) => {
-                    const done = status.status === 'analyzed' || status.status === 'complete';
+                    const done = currentStatus === 'analyzed' || currentStatus === 'complete';
                     const isCompleted = idx < activeIdx || done;
                     const isActive = idx === activeIdx && !done;
                     const isPending = idx > activeIdx;
@@ -80,14 +83,14 @@ export function ScanProgress({ status }: Props) {
                             gap: '1rem',
                             padding: '1rem',
                             borderRadius: '12px',
-                            background: isActive ? 'rgba(0, 230, 118, 0.05)' : 'transparent',
-                            border: `1px solid ${isActive ? 'rgba(0, 230, 118, 0.2)' : 'transparent'}`,
+                            background: isActive ? 'rgba(26, 115, 232, 0.05)' : 'transparent',
+                            border: `1px solid ${isActive ? 'rgba(26, 115, 232, 0.15)' : 'transparent'}`,
                             transition: 'all 0.3s ease'
                         }}>
                             <div style={{
                                 width: 32, height: 32, borderRadius: '50%',
                                 display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                background: isCompleted ? 'rgba(0, 230, 118, 0.1)' : (isActive ? 'rgba(0,0,0,0.5)' : 'transparent'),
+                                background: isCompleted ? 'rgba(26, 115, 232, 0.08)' : (isActive ? '#f2f4f7' : 'transparent'),
                                 color: color
                             }}>
                                 {isCompleted ? <CheckCircle size={20} /> : step.icon}
@@ -105,11 +108,7 @@ export function ScanProgress({ status }: Props) {
                 })}
             </div>
 
-            <style>{`
-        @keyframes shimmer {
-          100% { transform: translateX(100%); }
-        }
-      `}</style>
+
         </div>
     );
 }

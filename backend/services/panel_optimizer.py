@@ -9,7 +9,7 @@ from typing import Optional, Tuple
 import cv2
 import numpy as np
 
-from services.placement_network import predict_placement
+from backend.services.placement_network import predict_placement
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +48,7 @@ class PanelOptimizer:
 
         # ── Neural placement scoring ──
         try:
-            from utils.gpu_manager import get_device
+            from backend.utils.gpu_manager import get_device
             device = str(get_device())
         except Exception:
             device = "cpu"

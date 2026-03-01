@@ -19,8 +19,8 @@ async def quick_estimate(
     """
     Quick financial estimate without a scan — for the landing page calculator.
     """
-    from services.financial_engine import FinancialEngine
-    from utils.pvgis_client import PVGISClient
+    from backend.services.financial_engine import FinancialEngine
+    from backend.utils.pvgis_client import PVGISClient
 
     # Get irradiance for city
     pvgis = PVGISClient(offline_mode=True)

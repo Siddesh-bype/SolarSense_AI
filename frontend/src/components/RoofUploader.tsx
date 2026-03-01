@@ -1,6 +1,6 @@
 import { useState, useCallback } from 'react';
 import { useDropzone } from 'react-dropzone';
-import { UploadCloud, MapPin, Zap } from 'lucide-react';
+import { UploadCloud, MapPin, Zap, ArrowRight } from 'lucide-react';
 
 interface Props {
     onUpload: (file: File, options: { city: string; monthly_bill: number, isDemo: boolean }) => void;
@@ -40,7 +40,7 @@ export function RoofUploader({ onUpload, isUploading }: Props) {
             'image/png': ['.png'],
             'image/webp': ['.webp']
         },
-        maxSize: 20 * 1024 * 1024, // 20MB
+        maxSize: 20 * 1024 * 1024,
         multiple: false
     });
 
@@ -52,7 +52,6 @@ export function RoofUploader({ onUpload, isUploading }: Props) {
 
     const loadDemoPhoto = async () => {
         try {
-            // Generate a deterministic demo image so demo mode works without external assets.
             const canvas = document.createElement('canvas');
             canvas.width = 1280;
             canvas.height = 720;
@@ -88,55 +87,56 @@ export function RoofUploader({ onUpload, isUploading }: Props) {
         } catch (e) {
             console.warn('Failed to generate demo image, upload manually');
         }
-    }
+    };
 
     return (
-        <div className="glass-panel" style={{ padding: '2.5rem', maxWidth: '800px', margin: '0 auto', position: 'relative' }}>
-            <button
-                onClick={loadDemoPhoto}
-                className="btn btn-secondary"
-                style={{ position: 'absolute', top: '1rem', right: '1rem', padding: '0.5rem 1rem', fontSize: '0.8rem' }}>
-                Load Demo Image
-            </button>
-
-            <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
-                <h1 className="text-gradient" style={{ fontSize: '2.5rem', marginBottom: '0.5rem' }}>Point. Scan. Power.</h1>
-                <p style={{ color: 'var(--text-secondary)', fontSize: '1.1rem' }}>Upload a photo of your rooftop from above to get a complete solar layout and savings report instantly.</p>
+        <div className="glass-panel" style={{ padding: '2rem', maxWidth: '640px', margin: '0 auto', position: 'relative' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '1.5rem' }}>
+                <div>
+                    <h1 style={{ fontSize: '1.5rem', fontWeight: 600, marginBottom: '0.25rem' }}>Solar Roof Analysis</h1>
+                    <p style={{ color: 'var(--text-secondary)', fontSize: '0.9rem' }}>Upload a rooftop photo to get your personalized solar plan.</p>
+                </div>
+                <button
+                    onClick={loadDemoPhoto}
+                    className="btn btn-secondary"
+                    style={{ padding: '0.375rem 0.75rem', fontSize: '0.8rem', whiteSpace: 'nowrap', flexShrink: 0 }}>
+                    Try Demo
+                </button>
             </div>
 
             <form onSubmit={handleSubmit}>
                 {!file ? (
-                    <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''}`} style={{ marginBottom: '2rem' }}>
+                    <div {...getRootProps()} className={`dropzone ${isDragActive ? 'active' : ''}`} style={{ marginBottom: '1.5rem' }}>
                         <input {...getInputProps()} />
                         <div className="dropzone-icon">
-                            <UploadCloud size={32} />
+                            <UploadCloud size={28} />
                         </div>
                         {isDragActive ? (
-                            <p style={{ fontSize: '1.2rem', fontWeight: 500 }}>Drop the image here...</p>
+                            <p style={{ fontSize: '0.95rem', fontWeight: 500 }}>Drop the image here...</p>
                         ) : (
                             <div>
-                                <p style={{ fontSize: '1.2rem', fontWeight: 500, marginBottom: '0.5rem' }}>Drag & drop your rooftop photo here</p>
-                                <p style={{ color: 'var(--text-muted)' }}>or click to browse files (JPEG, PNG • Max 20MB)</p>
+                                <p style={{ fontSize: '0.95rem', fontWeight: 500, marginBottom: '0.25rem' }}>Drag and drop your rooftop photo</p>
+                                <p style={{ color: 'var(--text-muted)', fontSize: '0.85rem' }}>or click to browse (JPEG, PNG, max 20 MB)</p>
                             </div>
                         )}
                     </div>
                 ) : (
-                    <div style={{ marginBottom: '2rem', position: 'relative', borderRadius: '16px', overflow: 'hidden', border: '1px solid var(--border-subtle)' }}>
-                        <img src={preview!} alt="Roof preview" style={{ width: '100%', maxHeight: '300px', objectFit: 'cover', display: 'block' }} />
+                    <div style={{ marginBottom: '1.5rem', position: 'relative', borderRadius: '8px', overflow: 'hidden', border: '1px solid var(--border-subtle)' }}>
+                        <img src={preview!} alt="Roof preview" style={{ width: '100%', maxHeight: '260px', objectFit: 'cover', display: 'block' }} />
                         <button
                             type="button"
                             onClick={() => { setFile(null); setPreview(null); }}
                             className="btn btn-secondary"
-                            style={{ position: 'absolute', top: '1rem', right: '1rem', background: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(10px)' }}>
-                            Change Photo
+                            style={{ position: 'absolute', top: '0.5rem', right: '0.5rem', background: 'rgba(255,255,255,0.9)', padding: '0.3rem 0.6rem', fontSize: '0.8rem' }}>
+                            Change
                         </button>
                     </div>
                 )}
 
-                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '2rem' }}>
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem', marginBottom: '1.5rem' }}>
                     <div className="form-group">
                         <label className="form-label">
-                            <MapPin size={16} /> Location
+                            <MapPin size={14} /> Location
                         </label>
                         <select className="form-select" value={city} onChange={e => setCity(e.target.value)}>
                             {CITIES.map(c => <option key={c.id} value={c.id}>{c.name}</option>)}
@@ -145,7 +145,7 @@ export function RoofUploader({ onUpload, isUploading }: Props) {
 
                     <div className="form-group">
                         <label className="form-label">
-                            <Zap size={16} /> Monthly Electricity Bill (₹)
+                            <Zap size={14} /> Monthly Bill (INR)
                         </label>
                         <input
                             type="number"
@@ -161,13 +161,13 @@ export function RoofUploader({ onUpload, isUploading }: Props) {
                 <button
                     type="submit"
                     className="btn btn-primary"
-                    style={{ width: '100%', fontSize: '1.1rem', padding: '1rem' }}
+                    style={{ width: '100%', padding: '0.75rem', fontSize: '0.95rem' }}
                     disabled={!file || isUploading}
                 >
                     {isUploading ? (
-                        <><div className="spinner" /> Analyzing Rooftop...</>
+                        <><div className="spinner" /> Analyzing...</>
                     ) : (
-                        <>Generate Solar Plan ✨</>
+                        <>Analyze Roof <ArrowRight size={16} /></>
                     )}
                 </button>
             </form>

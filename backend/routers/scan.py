@@ -223,7 +223,7 @@ def _run_analysis(
 
     # ---------- 1. Preprocessing ----------
     _update_status(scan_id, "preprocessing", 15)
-    from utils.image_preprocessor import ImagePreprocessor
+    from backend.utils.image_preprocessor import ImagePreprocessor
 
     preprocessor = ImagePreprocessor()
     validation = preprocessor.validate(image_path)
@@ -247,10 +247,10 @@ def _run_analysis(
 
     # ---------- 2. Depth Estimation ----------
     _update_status(scan_id, "depth_estimation", 40)
-    from services.depth_estimator import DepthEstimator, save_depth_visualizations
+    from backend.services.depth_estimator import DepthEstimator, save_depth_visualizations
 
     try:
-        from utils.gpu_manager import get_device
+        from backend.utils.gpu_manager import get_device
         device = str(get_device())
     except Exception:
         device = "cpu"
@@ -261,8 +261,8 @@ def _run_analysis(
 
     # ---------- 3. Shadow Simulation ----------
     _update_status(scan_id, "shadow_simulation", 70)
-    from services.shadow_simulator import ShadowSimulator, save_heatmap_overlay
-    from utils.pvgis_client import PVGISClient
+    from backend.services.shadow_simulator import ShadowSimulator, save_heatmap_overlay
+    from backend.utils.pvgis_client import PVGISClient
 
     pvgis = PVGISClient()
     irradiance_data = pvgis.get_monthly_irradiance(latitude, longitude, city)
@@ -346,9 +346,9 @@ def _run_financial_calc(
     analysis: dict,
 ) -> dict:
     """Phase 2: Run financial calc based on the user's panel count."""
-    from services.financial_engine import FinancialEngine
-    from services.report_generator import ReportGenerator
-    from utils.pvgis_client import PVGISClient
+    from backend.services.financial_engine import FinancialEngine
+    from backend.services.report_generator import ReportGenerator
+    from backend.utils.pvgis_client import PVGISClient
 
     pvgis = PVGISClient()
     irradiance_data = pvgis.get_monthly_irradiance(latitude, longitude, city)

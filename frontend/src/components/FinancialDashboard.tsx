@@ -51,20 +51,20 @@ export function FinancialDashboard({ data }: Props) {
         <div className="animate-in" style={{ display: 'flex', flexDirection: 'column', gap: '1.5rem', maxWidth: '1000px', margin: '0 auto' }}>
 
             {/* Hero Metric */}
-            <div className="glass-panel" style={{ padding: '3rem', textAlign: 'center', background: 'radial-gradient(circle at top, rgba(0, 230, 118, 0.15), var(--bg-surface-glass))' }}>
+            <div className="glass-panel" style={{ padding: '2.5rem', textAlign: 'center' }}>
                 <h2 style={{ color: 'var(--text-secondary)', fontSize: '1.2rem', marginBottom: '1rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>
                     Estimated 25-Year Savings
                 </h2>
-                <div style={{ fontSize: '4rem', fontWeight: 700, lineHeight: 1, marginBottom: '1rem' }} className="text-gradient">
+                <div style={{ fontSize: '3rem', fontWeight: 700, lineHeight: 1, marginBottom: '1rem', color: 'var(--color-primary)' }}>
                     {formatINR(animatedSavings)}
                 </div>
                 <div style={{ display: 'flex', justifyContent: 'center', gap: '2rem', flexWrap: 'wrap' }}>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.05)', padding: '0.5rem 1rem', borderRadius: '20px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#f2f4f7', padding: '0.5rem 1rem', borderRadius: '20px' }}>
                         <Clock size={18} color="var(--color-primary)" />
                         <span>Payback: <strong>{data.payback_years.toFixed(1)} yrs</strong></span>
                     </div>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(255,255,255,0.05)', padding: '0.5rem 1rem', borderRadius: '20px' }}>
-                        <Zap size={18} color="var(--color-warning)" />
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', background: '#f2f4f7', padding: '0.5rem 1rem', borderRadius: '20px' }}>
+                        <Zap size={18} color="#e8a500" />
                         <span>Bill Offset: <strong>{data.bill_offset_pct.toFixed(0)}%</strong></span>
                     </div>
                 </div>
@@ -74,8 +74,8 @@ export function FinancialDashboard({ data }: Props) {
 
                 {/* Cost Breakdown */}
                 <div className="glass-panel" style={{ padding: '2rem' }}>
-                    <h3 style={{ fontSize: '1.2rem', marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                        <IndianRupee size={20} className="text-gradient" /> Investment Summary
+                    <h3 style={{ fontSize: '1.1rem', fontWeight: 600, marginBottom: '1.5rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                        <IndianRupee size={18} color="var(--color-primary)" /> Investment Summary
                     </h3>
 
                     <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
@@ -104,8 +104,8 @@ export function FinancialDashboard({ data }: Props) {
                     </div>
 
                     {data.emi && (
-                        <div style={{ marginTop: '2rem', padding: '1.2rem', background: 'rgba(41, 121, 255, 0.1)', borderRadius: '12px', border: '1px solid rgba(41, 121, 255, 0.3)' }}>
-                            <h4 style={{ color: 'var(--color-secondary)', marginBottom: '0.5rem' }}>Financing Option (SBI Solar Loan)</h4>
+                        <div style={{ marginTop: '2rem', padding: '1.2rem', background: '#f0f6ff', borderRadius: '10px', border: '1px solid #c6dafb' }}>
+                            <h4 style={{ color: '#1a73e8', marginBottom: '0.5rem', fontSize: '0.95rem', fontWeight: 600 }}>Financing Option (SBI Solar Loan)</h4>
                             <div style={{ fontSize: '1.5rem', fontWeight: 700 }}>{formatINR(data.emi.monthly_emi_inr)} <span style={{ fontSize: '1rem', color: 'var(--text-secondary)', fontWeight: 400 }}>/ month</span></div>
                             <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', marginTop: '0.2rem' }}>for {data.emi.tenure_months / 12} years @ {data.emi.annual_rate_pct}% p.a.</div>
                         </div>
@@ -136,8 +136,8 @@ export function FinancialDashboard({ data }: Props) {
 
                     {/* Savings Chart */}
                     <div className="glass-panel" style={{ padding: '1.5rem', flex: 1 }}>
-                        <h3 style={{ fontSize: '1.1rem', marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                            <TrendingUp size={16} className="text-gradient" /> Cumulative Return on Investment
+                        <h3 style={{ fontSize: '1rem', fontWeight: 600, marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                            <TrendingUp size={16} color="var(--color-primary)" /> Cumulative Return on Investment
                         </h3>
                         <div style={{ height: '200px' }}>
                             <ResponsiveContainer width="100%" height="100%">

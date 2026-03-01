@@ -33,7 +33,7 @@ async def lifespan(app: FastAPI):
 
     # Log GPU info
     try:
-        from utils.gpu_manager import get_device_info
+        from backend.utils.gpu_manager import get_device_info
         info = get_device_info()
         logger.info(f"  Device: {info['device']}")
         logger.info(f"  PyTorch: {info['torch_version']}")
@@ -81,8 +81,8 @@ os.makedirs("scan_outputs", exist_ok=True)
 app.mount("/static", StaticFiles(directory="scan_outputs"), name="static")
 
 # Import and include routers
-from routers.scan import router as scan_router
-from routers.financial import router as financial_router
+from backend.routers.scan import router as scan_router
+from backend.routers.financial import router as financial_router
 
 app.include_router(scan_router, prefix="/api/scan", tags=["scan"])
 app.include_router(financial_router, prefix="/api/financial", tags=["financial"])

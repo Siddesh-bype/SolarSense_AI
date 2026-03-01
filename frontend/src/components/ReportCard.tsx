@@ -24,7 +24,7 @@ export function ReportCard({ summary }: Props) {
                 </div>
             </div>
 
-            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', lineHeight: 1.7, fontSize: '1.05rem', color: 'rgba(255,255,255,0.9)' }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', lineHeight: 1.7, fontSize: '0.95rem', color: 'var(--text-primary)' }}>
                 {paragraphs.map((p, i) => (
                     <p key={i}>{p}</p>
                 ))}
