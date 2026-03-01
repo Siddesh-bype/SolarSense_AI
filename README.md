@@ -15,7 +15,7 @@ Built for **AMD Slingshot Hackathon 2026** | Domain: Sustainable AI & Green Tech
 | 📸 Smart Upload | Drag-drop rooftop photo with auto-validation (blur, brightness, resolution) |
 | 🧠 Depth Estimation | Depth Anything V2 model for 3D roof structure analysis |
 | ☀️ Shadow Simulation | Annual sun-path ray tracing with irradiance heatmap |
-| 📐 Panel Placement | Greedy optimizer for maximum energy yield with maintenance gaps |
+| 📐 Panel Placement | Greedy optimizer + trained **PlacementNet** U-Net CNN for neural-guided placement |
 | 💰 Financial Engine | 25-year ROI, PM Surya Ghar subsidy, EMI calculator |
 | 📝 AI Report | LLM-generated personalized summary (Anthropic Claude + fallback) |
 | 🎯 Demo Mode | Pre-computed results for reliable live demos |
@@ -31,8 +31,8 @@ Built for **AMD Slingshot Hackathon 2026** | Domain: Sustainable AI & Green Tech
 
 ### 1. Clone & Setup
 ```bash
-git clone <repo-url>
-cd Solarsense
+git clone https://github.com/Siddesh-bype/SolarSense_AI.git
+cd SolarSense_AI
 cp .env.example .env
 # Edit .env with your ANTHROPIC_API_KEY (optional)
 ```
@@ -79,9 +79,12 @@ Solarsense/
 │   │   ├── depth_estimator.py  # Depth Anything V2
 │   │   ├── shadow_simulator.py # Sun-path ray tracing
 │   │   ├── panel_optimizer.py  # Greedy panel placement
+│   │   ├── placement_network.py# PlacementNet U-Net CNN model
 │   │   ├── financial_engine.py # 25-year ROI calculator
 │   │   ├── energy_calculator.py# Energy yield calculator
 │   │   └── report_generator.py # LLM summary + fallback
+│   ├── weights/
+│   │   └── placement_net.pth   # Trained PlacementNet weights
 │   ├── utils/
 │   │   ├── gpu_manager.py      # AMD ROCm / CUDA / CPU
 │   │   ├── image_preprocessor.py
@@ -136,9 +139,10 @@ Append `?demo=true` to the frontend URL or use the **"Load Demo Image"** button 
 
 ## 🏆 AMD Slingshot Hackathon 2026
 
-**Team:** SolarSense AI  
+**Team:** SolarSense AI (Omee, Siddesh Bype)  
 **Track:** Sustainable AI & Green Tech  
-**Hardware:** AMD ROCm (auto-fallback to CUDA/CPU)
+**Hardware:** AMD ROCm (auto-fallback to CUDA/CPU)  
+**Repo:** [github.com/Siddesh-bype/SolarSense_AI](https://github.com/Siddesh-bype/SolarSense_AI)
 
 ---
 
