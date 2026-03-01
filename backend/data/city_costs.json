@@ -1,0 +1,47 @@
+{
+    "pune": {
+        "panel_per_watt": 38,
+        "installation_per_kw": 8500,
+        "inverter_per_kw": 6000
+    },
+    "mumbai": {
+        "panel_per_watt": 40,
+        "installation_per_kw": 9000,
+        "inverter_per_kw": 6500
+    },
+    "delhi": {
+        "panel_per_watt": 36,
+        "installation_per_kw": 8000,
+        "inverter_per_kw": 5800
+    },
+    "jaipur": {
+        "panel_per_watt": 35,
+        "installation_per_kw": 7500,
+        "inverter_per_kw": 5500
+    },
+    "bangalore": {
+        "panel_per_watt": 39,
+        "installation_per_kw": 8800,
+        "inverter_per_kw": 6200
+    },
+    "chennai": {
+        "panel_per_watt": 37,
+        "installation_per_kw": 8200,
+        "inverter_per_kw": 5900
+    },
+    "hyderabad": {
+        "panel_per_watt": 38,
+        "installation_per_kw": 8400,
+        "inverter_per_kw": 6000
+    },
+    "kolkata": {
+        "panel_per_watt": 39,
+        "installation_per_kw": 8600,
+        "inverter_per_kw": 6100
+    },
+    "default": {
+        "panel_per_watt": 38,
+        "installation_per_kw": 8500,
+        "inverter_per_kw": 6000
+    }
+}

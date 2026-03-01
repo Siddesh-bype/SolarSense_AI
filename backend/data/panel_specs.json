@@ -1,0 +1,13 @@
+{
+    "standard_540w": {
+        "wattage": 540,
+        "type": "Mono-crystalline PERC",
+        "width_m": 1.7,
+        "height_m": 1.0,
+        "weight_kg": 25,
+        "efficiency_pct": 21.5,
+        "warranty_years": 25,
+        "degradation_per_year_pct": 0.5,
+        "temperature_coefficient_pct_per_c": -0.35
+    }
+}

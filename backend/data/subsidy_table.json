@@ -1,0 +1,17 @@
+{
+    "pm_surya_ghar": {
+        "up_to_1kw": {
+            "subsidy_inr": 30000
+        },
+        "1kw_to_2kw": {
+            "subsidy_inr": 60000
+        },
+        "2kw_to_3kw": {
+            "subsidy_inr": 78000
+        },
+        "above_3kw": {
+            "subsidy_inr": 78000
+        },
+        "note": "Central subsidy under PM Surya Ghar Muft Bijli Yojana. Some states offer additional state-level subsidies."
+    }
+}
