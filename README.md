@@ -148,5 +148,6 @@ SolarSense_AI/
 
 - Omee
 - Siddesh Bype
+- durgesh-v-shukla
 
 [github.com/Siddesh-bype/SolarSense_AI](https://github.com/Siddesh-bype/SolarSense_AI)
