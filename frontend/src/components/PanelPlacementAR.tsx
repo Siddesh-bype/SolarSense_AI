@@ -7,10 +7,12 @@ interface Props {
     heatmapImage: string; // Used for optional blending
     panels: PanelPlacement[];
     totalCapacityKw: number;
+    imageWidth: number;
+    imageHeight: number;
     onContinue: () => void;
 }
 
-export function PanelPlacementAR({ originalImage, heatmapImage, panels, totalCapacityKw, onContinue }: Props) {
+export function PanelPlacementAR({ originalImage, heatmapImage, panels, totalCapacityKw, imageWidth, imageHeight, onContinue }: Props) {
     const [showPanels, setShowPanels] = useState(true);
     const [hoveredPanel, setHoveredPanel] = useState<number | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
@@ -92,10 +94,10 @@ export function PanelPlacementAR({ originalImage, heatmapImage, panels, totalCap
                                 onMouseLeave={() => setHoveredPanel(null)}
                                 style={{
                                     position: 'absolute',
-                                    left: `${(p.x / 1024) * 100}%`,
-                                    top: `${(p.y / 1024) * 100}%`,
-                                    width: `${(p.width / 1024) * 100}%`,
-                                    height: `${(p.height / 1024) * 100}%`,
+                                    left: `${(p.x / imageWidth) * 100}%`,
+                                    top: `${(p.y / imageHeight) * 100}%`,
+                                    width: `${(p.width / imageWidth) * 100}%`,
+                                    height: `${(p.height / imageHeight) * 100}%`,
                                     backgroundColor: hoveredPanel === p.panel_id ? 'rgba(0, 230, 118, 0.4)' : 'rgba(41, 121, 255, 0.35)',
                                     border: `2px solid ${hoveredPanel === p.panel_id ? '#00E676' : 'white'}`,
                                     borderRadius: '2px',

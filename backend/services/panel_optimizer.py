@@ -1,12 +1,15 @@
 """
 Panel Placement Optimizer — Greedy algorithm for optimal solar panel placement
 on a rooftop given irradiance and depth data.
+Enhanced with neural PlacementNet scoring from Colab-trained model.
 """
 import logging
 from typing import Optional, Tuple
 
 import cv2
 import numpy as np
+
+from services.placement_network import predict_placement
 
 logger = logging.getLogger(__name__)
 
@@ -36,12 +39,26 @@ class PanelOptimizer:
         max_panels: Optional[int] = None,
     ) -> dict:
         """
-        Greedy panel placement algorithm.
+        Greedy panel placement algorithm enhanced with neural PlacementNet scoring.
         Returns dict with: panels, total_panels, total_area_m2, system_capacity_kw,
                           estimated_annual_kwh, coverage_percentage
         """
         h_img, w_img = roof_mask.shape[:2]
         roof_area_m2 = depth_result.get("estimated_roof_area_m2", 50.0)
+
+        # ── Neural placement scoring ──
+        try:
+            from utils.gpu_manager import get_device
+            device = str(get_device())
+        except Exception:
+            device = "cpu"
+
+        neural_prob = predict_placement(irradiance_map, device=device)
+        use_neural = neural_prob is not None
+        if use_neural:
+            logger.info("[Placement] Neural PlacementNet active — blending scores")
+        else:
+            logger.info("[Placement] Neural model unavailable — using irradiance only")
 
         # Compute pixel-to-meter scale
         roof_pixels = float(np.sum(roof_mask > 0))
@@ -79,7 +96,7 @@ class PanelOptimizer:
         # Create occupancy grid (0 = free, 1 = occupied)
         occupancy = (usable == 0).astype(np.uint8)
 
-        # Find candidate positions sorted by irradiance score
+        # Find candidate positions sorted by blended score
         panels = []
         panel_id = 0
         max_p = max_panels or 50
@@ -94,7 +111,15 @@ class PanelOptimizer:
                 if np.any(region):
                     continue
                 irr_region = irr_norm[y : y + panel_h_px, x : x + panel_w_px]
-                score = float(np.mean(irr_region))
+                irr_score = float(np.mean(irr_region))
+
+                if use_neural:
+                    neural_region = neural_prob[y : y + panel_h_px, x : x + panel_w_px]
+                    neural_score = float(np.mean(neural_region))
+                    score = 0.5 * irr_score + 0.5 * neural_score
+                else:
+                    score = irr_score
+
                 candidates.append((score, x, y))
 
         # Sort by irradiance score descending

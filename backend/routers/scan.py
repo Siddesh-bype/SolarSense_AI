@@ -296,6 +296,8 @@ def _run_pipeline(
         "placement": {
             **placement_result,
             "placement_url": f"{base_url}/placement.png",
+            "image_width": image_bgr.shape[1],
+            "image_height": image_bgr.shape[0],
         },
         "financial": financial,
         "summary": summary,

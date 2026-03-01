@@ -53,6 +53,9 @@ backend/data/processed/
 *.npz
 *.npy
 
+# Keep trained PlacementNet weights
+!backend/weights/placement_net.pth
+
 # ─── Logs ─────────────────────────────────────────────────────────────────────
 *.log
 logs/

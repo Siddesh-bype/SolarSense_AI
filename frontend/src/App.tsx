@@ -94,6 +94,8 @@ function App() {
             heatmapImage={result.shadow.heatmap_url}
             panels={result.placement.panels}
             totalCapacityKw={result.placement.system_capacity_kw}
+            imageWidth={result.placement.image_width}
+            imageHeight={result.placement.image_height}
             onContinue={() => setViewState('financial')}
           />
         )}

@@ -82,6 +82,8 @@ export interface CompleteScanResult {
         estimated_annual_kwh: number;
         coverage_percentage: number;
         placement_url: string;
+        image_width: number;
+        image_height: number;
     };
     financial: FinancialReport;
     summary: string;
